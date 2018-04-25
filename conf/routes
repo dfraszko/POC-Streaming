@@ -1,0 +1,8 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+GET     /relay/:filename            controllers.ApplicationController.relay(filename)
+
+POST    /storage/:id                controllers.ApplicationController.save(id)
+GET     /storage/:id                controllers.ApplicationController.load(id)

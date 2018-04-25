@@ -1,0 +1,11 @@
+---
+version: '3.2'
+
+services:
+
+  components:
+    image: registry.datapwn.com/talend/tcomp-components-api-service-rest-all-components-master:latest
+    ports:
+      - 8989:8989
+    volumes:
+    - ./data:/data
