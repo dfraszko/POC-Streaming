@@ -2,6 +2,7 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+GET     /dataset/:id                controllers.ApplicationController.dataset(id)
 GET     /relay/:filename            controllers.ApplicationController.relay(filename)
 
 POST    /storage/:id                controllers.ApplicationController.save(id)

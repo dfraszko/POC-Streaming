@@ -4,7 +4,7 @@ import java.io._
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
-import akka.util.{ByteString, CompactByteString}
+import akka.util.ByteString
 import org.apache.avro.Schema
 import org.apache.avro.file.{CodecFactory, DataFileWriter}
 import org.apache.avro.generic.{GenericDatumReader, GenericDatumWriter, GenericRecord}
@@ -54,7 +54,7 @@ object AvroUtils {
       val encoder = EncoderFactory.get.jsonEncoder(schema, baos, true)
       writer.write(record, encoder)
       encoder.flush()
-      CompactByteString.apply(baos.toByteArray)
+      ByteString(baos.toByteArray)
     }
 
   val toBinary: Flow[GenericRecord, ByteString, NotUsed] =
@@ -65,7 +65,7 @@ object AvroUtils {
       val encoder = EncoderFactory.get.binaryEncoder(baos, null)
       writer.write(record, encoder)
       encoder.flush()
-      CompactByteString.apply(baos.toByteArray)
+      ByteString(baos.toByteArray)
     }
 
 }

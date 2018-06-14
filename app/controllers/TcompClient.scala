@@ -55,10 +55,10 @@ class TcompClient @Inject()(ws: WSClient, configuration: Configuration)(implicit
     ws.url(s"$tcompBase/runtimes/data")
       .withRequestFilter(AhcCurlRequestLogger())
       //.addQueryStringParameters("from" -> "0", "limit" -> "10")
-        .addHttpHeaders(HeaderNames.ACCEPT -> accept.getOrElse("application/avro-json"))
-        .withRequestTimeout(tcompTimeout)
-        .withMethod("POST")
-        .withBody(properties(filename))
+      .addHttpHeaders(HeaderNames.ACCEPT -> accept.getOrElse("application/avro-json"))
+      .withRequestTimeout(tcompTimeout)
+      .withMethod("POST")
+      .withBody(properties(filename))
       .stream() map { response =>
       if (isSuccessful(response.status)) response.bodyAsSource.right
       else ServiceUnavailable(s"cannot fetch data for $filename from tcomp").left

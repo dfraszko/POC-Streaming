@@ -16,7 +16,7 @@
   <logger name="play.shaded.ahc.org.asynchttpclient.netty.channel.DefaultChannelPool" level="INFO" />
 
   <root level="DEBUG">
-    <appender-ref ref="ASYNCSTDOUT" />
+    <appender-ref ref="STDOUT" />
   </root>
 
 </configuration>

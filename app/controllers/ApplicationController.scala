@@ -7,10 +7,12 @@ import akka.stream.scaladsl.{FileIO, Source}
 import akka.util.ByteString
 import javax.inject.Inject
 import play.api.Configuration
-import play.api.http.HeaderNames
+import play.api.http.{HeaderNames, MimeTypes}
 import play.api.libs.streams.Accumulator
 import play.api.mvc._
+import scalaz.Scalaz._
 import scalaz._
+import utils.AvroUtils
 
 import scala.concurrent.ExecutionContext
 
@@ -23,6 +25,20 @@ class ApplicationController @Inject()(
 
   val directory = Paths.get("storage")
   if (!Files.exists(directory)) Files.createDirectory(directory)
+
+  // http://mail-archives.apache.org/mod_mbox/avro-dev/201210.mbox/%3CCAGHyZ6+QnpygiEGvfFE-MeJT2fEiNJon_z6_3Tb-U0Wv=8uzEw@mail.gmail.com%3E
+  val AcceptsBinary = Accepting("application/vnd.apache.avro+binary")
+  val AcceptsJson   = Accepting("application/vnd.apache.avro+json")
+
+  def dataset(id: String) = Action.async(parse.empty) { request =>
+    (for {
+      schema  <- EitherT(tcomp.schemaFor(id))
+      records <- EitherT(tcomp.dataFor(id, Some("application/avro-binary")))
+    } yield AvroFramer.frame(schema, records).via(AvroUtils.toJSON)).run map {
+      case -\/(result) => result
+      case \/-(source) => Ok.chunked(source).as(MimeTypes.JSON)
+    }
+  }
 
   def relay(filename: String) = Action(parse.empty).async { request =>
     tcomp.dataFor(filename, request.headers.get(HeaderNames.ACCEPT)) map {

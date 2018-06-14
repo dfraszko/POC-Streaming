@@ -16,12 +16,11 @@ docker-compose up -d
 ```shell
 curl \
   --verbose \
-  --progress-bar \
   --request POST \
   --header 'Accept: application/avro-json' \
   --header 'Content-Type: application/json' \
   --data '{"properties":{"format":"AVRO","path":"/data/example-1k.avro","@definitionName":"SimpleFileIoDataset"},"dependencies":[{"@definitionName":"SimpleFileIoDatastore"}]}' \
-  'http://127.0.0.1:8989/tcomp/v0/runtimes/data'
+  'http://127.0.0.1:8989/tcomp/v0/runtimes/data' > example-1k.avro
 ```
 
 ### Fetch schema
@@ -33,7 +32,7 @@ curl \
   --header 'Accept: application/json' \
   --header 'Content-Type: application/json' \
   --data '{"properties":{"format":"AVRO","path":"/data/example-1k.avro","@definitionName":"SimpleFileIoDataset"},"dependencies":[{"@definitionName":"SimpleFileIoDatastore"}]}' \
-  'http://127.0.0.1:8989/tcomp/v0/runtimes/schema'
+  'http://127.0.0.1:8989/tcomp/v0/runtimes/schema' > example-1k.avsc
 ```
 
 POC
@@ -53,4 +52,6 @@ curl --verbose --request GET http://127.0.0.1:8080/storage/1 > result.avro
 curl --verbose --header 'Accept: application/avro-json' --request GET http://127.0.0.1:8080/relay/example-1k.avro > result-json.avro
 
 curl --verbose --header 'Accept: application/avro-binary' --request GET http://127.0.0.1:8080/relay/example-1k.avro > result-binary.avro
+
+curl --verbose --request GET http://127.0.0.1:8080/dataset/example-1k.avro > result-binary.avro
 ```
