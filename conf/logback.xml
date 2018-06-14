@@ -11,13 +11,10 @@
     <appender-ref ref="STDOUT" />
   </appender>
 
-  <logger name="slick.compiler" level="INFO" />
-  <logger name="com.zaxxer.hikari.pool.HikariPool" level="INFO" />
-  <logger name="play.shaded.ahc.org.asynchttpclient.netty.channel.DefaultChannelPool" level="INFO" />
+  <logger name="poc" level="ALL" />
 
-  <root level="DEBUG">
-    <appender-ref ref="STDOUT" />
+  <root level="INFO">
+    <appender-ref ref="ASYNCSTDOUT" />
   </root>
 
 </configuration>
-

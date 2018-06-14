@@ -19,14 +19,14 @@ object AvroFramer {
     val is = chunks.runWith(StreamConverters.asInputStream())
     Source
       .fromGraph(new AvroFramer(schema, is))
-      //.withAttributes(ActorAttributes.dispatcher("akka.stream.blocking-io-dispatcher"))
+      .withAttributes(ActorAttributes.dispatcher("akka.stream.blocking-io-dispatcher"))
   }
 
 }
 
 class AvroFramer(schema: Schema, is: InputStream) extends GraphStage[SourceShape[GenericRecord]] {
 
-  val LOGGER = LoggerFactory.getLogger("TOTO")
+  val LOGGER = LoggerFactory.getLogger("poc.AvroFramer")
 
   val out: Outlet[GenericRecord] = Outlet("output")
 
@@ -36,22 +36,25 @@ class AvroFramer(schema: Schema, is: InputStream) extends GraphStage[SourceShape
 
     val datumReader = new GenericDatumReader[GenericRecord](schema)
     val decoder     = DecoderFactory.get.binaryDecoder(is, null)
-    var counter = 0
+    var counter     = 0 // It is safe to use var inside the GraphStageLogic
 
     setHandler(
       out,
       new OutHandler {
         override def onPull(): Unit = {
-          counter = counter + 1
-          LOGGER.debug(s"onPull $counter")
           Try(datumReader.read(null, decoder)) match {
-            case Success(record)           => push(out, record)
-            case Failure(ex: EOFException) => completeStage()
+            case Success(record)           => counter += 1; push(out, record)
+            case Failure(ex: EOFException) => LOGGER.debug(s"End of stream; ${counter} records has been processed"); completeStage()
             case Failure(ex: Throwable)    => failStage(ex)
           }
         }
       }
     )
+
+    override def postStop(): Unit = {
+      LOGGER.debug("Close the underlying input stream")
+      is.close()
+    }
   }
 
 }
