@@ -44,7 +44,7 @@ class AvroFramer(schema: Schema, is: InputStream) extends GraphStage[SourceShape
         override def onPull(): Unit = {
           Try(datumReader.read(null, decoder)) match {
             case Success(record)           => counter += 1; push(out, record)
-            case Failure(ex: EOFException) => LOGGER.debug(s"End of stream; ${counter} records has been processed"); completeStage()
+            case Failure(ex: EOFException) => LOGGER.debug(s"End of stream; ${counter} records have been processed"); completeStage()
             case Failure(ex: Throwable)    => failStage(ex)
           }
         }
